@@ -13,7 +13,7 @@ public class SFAPolygon extends SFAGeometry {
     public SFAPolygon(SFALinearRing outerRing, List<SFALinearRing> innerRings, int srid) {
         super(srid);
         this.outerRing = outerRing;
-        if(innerRings == null){
+        if (innerRings == null) {
             this.innerRings = new ArrayList<>();
         } else {
             this.innerRings = innerRings;

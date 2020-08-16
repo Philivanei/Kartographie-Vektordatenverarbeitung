@@ -7,9 +7,8 @@ public class SFALinearRing extends SFALineString {
 
     public SFALinearRing(List<SFAPoint> points, int srid) {
         super(points, srid);
-        if(!isRing()){
+        if (!isRing()) {
             throw new InvalidParameterException();
         }
     }
-
 }

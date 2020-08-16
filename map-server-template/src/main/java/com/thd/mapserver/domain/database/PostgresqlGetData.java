@@ -4,6 +4,7 @@ import com.thd.mapserver.domain.exceptions.PostgresqlException;
 import com.thd.mapserver.domain.geom.SFAPolygon;
 
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -45,7 +46,6 @@ public class PostgresqlGetData {
     }
 
 
-
     public String getSelectedFeatures(String typ, int limit, int offset) throws PostgresqlException {
         try (final var connection = DriverManager.getConnection(connectionString)) {
             final var getString = "SELECT description, typ, ST_AsGeoJSON(geometries) as geoJson FROM features " +
@@ -56,35 +56,37 @@ public class PostgresqlGetData {
             getStatement.setObject(2, limit);
             getStatement.setObject(3, offset);
 
-            var res = getStatement.executeQuery();
-
-            StringBuilder stringBuilder = new StringBuilder("[");
-            while (res.next()){
-                stringBuilder.append("{");
-                stringBuilder.append(
-                        String.format("\"type\": \"Feature\"," +
-                                "\"properties\": { \"description\": \"%s\", \"typ\": \"%s\" }," +
-                                "\"geometry\": %s",
-                                res.getString("description"), res.getString("typ"), res.getString("geoJson"))
-                );
-                stringBuilder.append("}");
-                if(!res.isLast()){
-                    stringBuilder.append(",");
-                }
-            }
-
-
-            stringBuilder.append("]");
-
-            return String.format("{" +
-                    "\"type\": \"FeatureCollection\"," +
-                    "\t\"features\": %s\n" +
-                    "\t}", stringBuilder.toString());
+            return getJsonString(getStatement);
 
         } catch (
                 final SQLException e) {
             throw new PostgresqlException("Could not load data out of database: ", e);
         }
+    }
+
+    private String getJsonString(PreparedStatement getStatement) throws SQLException {
+        var res = getStatement.executeQuery();
+
+        StringBuilder stringBuilder = new StringBuilder("[");
+        while (res.next()) {
+            stringBuilder.append("{");
+            stringBuilder.append(
+                    String.format("\"type\": \"Feature\"," +
+                                    "\"properties\": { \"description\": \"%s\", \"typ\": \"%s\" }," +
+                                    "\"geometry\": %s",
+                            res.getString("description"), res.getString("typ"), res.getString("geoJson"))
+            );
+            stringBuilder.append("}");
+            if (!res.isLast()) {
+                stringBuilder.append(",");
+            }
+        }
+        stringBuilder.append("]");
+
+        return String.format("{" +
+                "\"type\": \"FeatureCollection\"," +
+                "\t\"features\": %s\n" +
+                "\t}", stringBuilder.toString());
     }
 
     public String getSelectedFeatures(String typ, SFAPolygon bbox, int limit, int offset) throws PostgresqlException {
@@ -98,30 +100,7 @@ public class PostgresqlGetData {
             getStatement.setObject(3, limit);
             getStatement.setObject(4, offset);
 
-            var res = getStatement.executeQuery();
-
-            StringBuilder stringBuilder = new StringBuilder("[");
-            while (res.next()){
-                stringBuilder.append("{");
-                stringBuilder.append(
-                        String.format("\"type\": \"Feature\"," +
-                                        "\"properties\": { \"description\": \"%s\", \"typ\": \"%s\" }," +
-                                        "\"geometry\": %s",
-                                res.getString("description"), res.getString("typ"), res.getString("geoJson"))
-                );
-                stringBuilder.append("}");
-                if(!res.isLast()){
-                    stringBuilder.append(",");
-                }
-            }
-
-
-            stringBuilder.append("]");
-
-            return String.format("{" +
-                    "\"type\": \"FeatureCollection\"," +
-                    "\t\"features\": %s\n" +
-                    "\t}", stringBuilder.toString());
+            return getJsonString(getStatement);
 
         } catch (
                 final SQLException e) {

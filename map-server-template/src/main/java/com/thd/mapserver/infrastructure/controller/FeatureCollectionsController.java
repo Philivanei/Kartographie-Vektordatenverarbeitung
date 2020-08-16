@@ -10,7 +10,7 @@ import com.thd.mapserver.domain.geom.SFAPolygon;
 import com.thd.mapserver.domain.materials.TypeList;
 import com.thd.mapserver.domain.ogcnorm.Collections;
 import com.thd.mapserver.domain.ogcnorm.Links;
-import com.thd.mapserver.domain.ogcnorm.ResponseOGC;
+import com.thd.mapserver.domain.ogcnorm.Response;
 import com.thd.mapserver.domain.parser.GeoJsonParser;
 import com.thd.mapserver.domain.exceptions.PoiConnectionException;
 import org.geojson.*;
@@ -57,10 +57,9 @@ public class FeatureCollectionsController {
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 
-
     @GetMapping("/collections")
-    public HttpEntity<ResponseOGC> getLandingPage() throws PostgresqlException {
-        ResponseOGC responseOGC = new ResponseOGC();
+    public HttpEntity<Response> getLandingPage() throws PostgresqlException {
+        Response responseOGC = new Response();
         PostgresqlGetData postgresqlGetData = new PostgresqlGetData(CONNECTION_STRING);
 
         var rs = postgresqlGetData.getFeatureTypes();
@@ -98,8 +97,8 @@ public class FeatureCollectionsController {
     }
 
     @GetMapping("/collections/{collectionid}")
-    public HttpEntity<ResponseOGC> getIdLandingPage(@PathVariable("collectionid") String typ) throws PostgresqlException {
-        ResponseOGC responseOGC = new ResponseOGC();
+    public HttpEntity<Response> getIdLandingPage(@PathVariable("collectionid") String typ) throws PostgresqlException {
+        Response responseOGC = new Response();
         PostgresqlGetData postgresqlGetData = new PostgresqlGetData(CONNECTION_STRING);
 
         var rs = postgresqlGetData.getSelectedCollection(typ);
@@ -209,8 +208,11 @@ public class FeatureCollectionsController {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
-        return new ResponseEntity<>(feature, HttpStatus.OK);
+        if (feature != null) {
+            return new ResponseEntity<>(feature, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Invalid match (collection.id and feature.id)", HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

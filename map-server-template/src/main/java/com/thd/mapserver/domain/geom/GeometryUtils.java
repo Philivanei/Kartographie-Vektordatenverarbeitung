@@ -19,24 +19,23 @@ public final class GeometryUtils {
 
         List<SFALinearRing> allRings = new ArrayList<>();
         allRings.add(outerRing);
-        if(!innerRings.isEmpty()){
+        if (!innerRings.isEmpty()) {
             allRings.addAll(innerRings);
         }
 
         var lastRing = allRings.get(allRings.size() - 1);
 
-        for(SFALinearRing ring : allRings){
-
+        for (SFALinearRing ring : allRings) {
             stringBuilder.append("(");
-            for(int i = 0; i < ring.numPoints(); i++){
+            for (int i = 0; i < ring.numPoints(); i++) {
                 stringBuilder.append(convertCoordinatesToWkt(ring.pointN(i)));
-                if(i != ring.numPoints() - 1){
+                if (i != ring.numPoints() - 1) {
                     stringBuilder.append(",");
                 }
             }
             stringBuilder.append(")");
 
-            if(ring != lastRing){
+            if (ring != lastRing) {
                 stringBuilder.append(",");
             }
         }

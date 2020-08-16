@@ -35,7 +35,6 @@ public class PostgresqlUploader implements PoiRepository {
             final var insertString = "INSERT INTO features VALUES (uuid_generate_v4(), ST_GeomFromText(?, ?), ?, ?);";
             final var insertStatement = connection.prepareStatement(insertString);
 
-
             insertStatement.setString(1, wktGeometry);
             insertStatement.setInt(2, sridGeometry);
             insertStatement.setString(3, typ);

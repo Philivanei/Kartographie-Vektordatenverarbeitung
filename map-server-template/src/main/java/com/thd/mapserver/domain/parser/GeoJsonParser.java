@@ -11,10 +11,6 @@ import java.util.Map;
 
 public class GeoJsonParser {
 
-    public GeoJsonParser() {
-
-    }
-
     public List<SFAFeature> parseJson(GeoJsonObject json) {
         if (json instanceof FeatureCollection) {
             FeatureCollection featureCollection = (FeatureCollection) json;
@@ -84,10 +80,10 @@ public class GeoJsonParser {
         }
         outerRing = new SFALinearRing(points, 4326);
 
-        if(!polygon.getInteriorRings().isEmpty()){
+        if (!polygon.getInteriorRings().isEmpty()) {
             for (var ringList : polygon.getInteriorRings()) {
                 points = new ArrayList<>();
-                for (var coordinates: ringList) {
+                for (var coordinates : ringList) {
                     points.add(new SFAPoint(coordinates.getLongitude(), coordinates.getLatitude(), coordinates.getAltitude(), 4326));
                 }
                 innerRings.add(new SFALinearRing(points, 4326));
@@ -99,16 +95,10 @@ public class GeoJsonParser {
     }
 
     private SFAPoint parsePoint(Point point) {
-        parseLngLatAlt(point.getCoordinates());
         return new SFAPoint(
                 point.getCoordinates().getLongitude(),
                 point.getCoordinates().getLatitude(),
                 point.getCoordinates().getAltitude(),
                 0);
     }
-
-    private SFAPoint parseLngLatAlt(LngLatAlt lngLatAlt) {
-        return new SFAPoint(lngLatAlt.getLongitude(), lngLatAlt.getLatitude(), lngLatAlt.getAltitude(), 0);
-    }
-
 }
