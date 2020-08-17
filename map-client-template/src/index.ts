@@ -1,6 +1,6 @@
-import mapboxgl, { GeoJSONSourceRaw } from "mapbox-gl";
+import mapboxgl from "mapbox-gl";
 import mapTilerKey from "./mapTilerKey";
-import $, { type } from "jquery";
+import $ from "jquery";
 
 import { getColorString } from "./colorLib";
 
@@ -161,7 +161,7 @@ function addAllPointsAndPolygons(map: mapboxgl.Map, bbox: number[] | undefined =
                                 "circle-color": getColorString(collection.id)
                             }
                         });
-
+                        
                         $(`#cbx${collection.id}`).change((e: any) => {
                             if (e.target.checked) {
                                 map.setLayoutProperty(`PointsOf${collection.id}Source`, 'visibility', 'visible')
