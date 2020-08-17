@@ -11,8 +11,10 @@
             padding: 0;
         }
 
-        #selectionArea{
-            width: 100%;
+        #selectionArea {
+            width: 200px;
+            float: right;
+            padding: 5px;
             text-align: right;
         }
 
@@ -22,12 +24,36 @@
             bottom: 0;
             width: calc(100% - 200px);
         }
+
+        input.bbox {
+            width: 50%;
+        }
     </style>
 </head>
 
 <body>
     <div id="map"></div>
     <div id="selectionArea">
+        <br>
+        <label for="#x1">x1</label>
+        <input type="number" class="bbox" id="x1" />
+        <br>
+        <label for="#y1">y1</label>
+        <input type="number" class="bbox" id="y1" />
+        <br>
+        <label for="#x2">x2</label>
+        <input type="number" class="bbox" id="x2" />
+        <br>
+        <label for="#y2">y2</label>
+        <input type="number" class="bbox" id="y2" />
+        <br>
+        <br>
+        <button id="applyButton">apply</button>
+        <hr>
+        <br>
+        <div id="collectionSelection">
+
+        </div>
     </div>
 </body>
 
