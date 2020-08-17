@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.thd.mapserver.domain.database.PostgresqlGetData;
 import com.thd.mapserver.domain.exceptions.PostgresqlException;
-import com.thd.mapserver.domain.ogcnorm.Collections;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,16 +22,16 @@ public class LandingPageController {
         List<FeatureCollection> featureCollections = new ArrayList<>();
         var rs = postgresqlGetData.getCollections();
 
-            try {
-                while(rs.next()){
-                    var name = rs.getString("title");
-                    var description = rs.getString("description");
-                    FeatureCollection featureCollection = new FeatureCollection(name, description);
-                    featureCollections.add(featureCollection);
-                }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+        try {
+            while (rs.next()) {
+                var name = rs.getString("title");
+                var description = rs.getString("description");
+                FeatureCollection featureCollection = new FeatureCollection(name, description);
+                featureCollections.add(featureCollection);
             }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
 
         model.addAttribute("collections", featureCollections); // A Attribute can be accessed via the ${attributeName} syntax
         // in the html template

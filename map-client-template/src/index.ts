@@ -103,8 +103,6 @@ function addAllPointsAndPolygons(map: mapboxgl.Map) {
                     <br>
                 `)
 
-                
-
                 fetch(`http://localhost:8080/collections/${collection.id}/items?limit=1000`).then((response: any) => {
                     response.json().then((data: any) => {
                         map.addSource(`${collection.id}Source`, {
@@ -131,7 +129,7 @@ function addAllPointsAndPolygons(map: mapboxgl.Map) {
                         });
 
                         $(`#cbx${collection.id}`).change((e: any) => {
-                            if(e.target.checked){
+                            if (e.target.checked) {
                                 map.setLayoutProperty(`PointsOf${collection.id}Source`, 'visibility', 'visible')
                                 map.setLayoutProperty(`PolygonsOf${collection.id}Source`, 'visibility', 'visible')
                             } else {
@@ -169,10 +167,9 @@ function addAllPointsAndPolygons(map: mapboxgl.Map) {
                             map.getCanvas().style.cursor = '';
                         });
 
-
                         // When a click event occurs on a feature in the states layer, open a popup at the
                         // location of the click, with description HTML from its properties.
-                        map.on('click', `PolygonsOf${collection.id}Source`, function (e:any) {
+                        map.on('click', `PolygonsOf${collection.id}Source`, function (e: any) {
                             new mapboxgl.Popup()
                                 .setLngLat(e.lngLat)
                                 .setHTML(e.features[0].properties.description)
@@ -193,8 +190,5 @@ function addAllPointsAndPolygons(map: mapboxgl.Map) {
                 })
             })
         })
-
-
-
     })
 }

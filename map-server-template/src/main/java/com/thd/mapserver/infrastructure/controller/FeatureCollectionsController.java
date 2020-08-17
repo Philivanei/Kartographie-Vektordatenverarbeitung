@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -30,6 +31,10 @@ import java.util.List;
 public class FeatureCollectionsController {
 
     private final String CONNECTION_STRING = "jdbc:postgresql://localhost/Studienarbeit?user=postgres&password=0000";
+    private final String HOST_STRING = "http://localhost:8080";
+    private final String SELF_RELATION = "self";
+    private final String ITEMS_RELATION = "items";
+    private final String COLLECTION_RELATION = "collection";
 
     @PostMapping(path = "/import_features")
     public HttpEntity<String> importGeoJson(@RequestBody GeoJsonObject geoJson) {
@@ -58,17 +63,17 @@ public class FeatureCollectionsController {
     }
 
     @GetMapping("/collections")
-    public HttpEntity<Response> getLandingPage() throws PostgresqlException {
-        Response responseOGC = new Response();
+    public HttpEntity<Response> getLandingPage(HttpServletRequest request) throws PostgresqlException {
+        Response response = new Response();
         PostgresqlGetData postgresqlGetData = new PostgresqlGetData(CONNECTION_STRING);
 
         var rs = postgresqlGetData.getCollections();
 
         try {
             Links linkCollections = new Links();
-            linkCollections.href = "http://localhost:8080/collections/";
-            linkCollections.rel = "self";
-            responseOGC.links.add(linkCollections);
+            linkCollections.href = HOST_STRING + request.getRequestURI();
+            linkCollections.rel = SELF_RELATION;
+            response.links.add(linkCollections);
 
             while (rs.next()) {
                 Collections collections = new Collections();
@@ -79,35 +84,37 @@ public class FeatureCollectionsController {
                 collections.title = rs.getString("title");
                 collections.description = rs.getString("description");
 
-                linkCollectionItems.href = "http://localhost:8080/collections/" + collections.title + "/items";
-                linkCollectionItems.rel = "items";
-                linkCollection.href = "http://localhost:8080/collections/" + collections.title;
-                linkCollection.rel = "collection";
+                linkCollectionItems.href = HOST_STRING + request.getRequestURI() + "/" + collections.title + "/" +
+                        ITEMS_RELATION;
+                linkCollectionItems.rel = ITEMS_RELATION;
+                linkCollection.href = HOST_STRING + request.getRequestURI() + "/" + collections.title;
+                linkCollection.rel = COLLECTION_RELATION;
 
                 collections.links.add(linkCollectionItems);
                 collections.links.add(linkCollection);
 
-                responseOGC.collections.add(collections);
+                response.collections.add(collections);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
 
-        return new ResponseEntity<>(responseOGC, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/collections/{collectionid}")
-    public HttpEntity<Response> getIdLandingPage(@PathVariable("collectionid") String typ) throws PostgresqlException {
-        Response responseOGC = new Response();
+    public HttpEntity<Response> getIdLandingPage(@PathVariable("collectionid") String typ, HttpServletRequest request)
+            throws PostgresqlException {
+        Response response = new Response();
         PostgresqlGetData postgresqlGetData = new PostgresqlGetData(CONNECTION_STRING);
 
         var rs = postgresqlGetData.getSelectedCollection(typ);
 
         try {
             Links linkCollections = new Links();
-            linkCollections.href = "http://localhost:8080/collections/";
-            linkCollections.rel = "self";
-            responseOGC.links.add(linkCollections);
+            linkCollections.href = HOST_STRING + "/collections";
+            linkCollections.rel = COLLECTION_RELATION;
+            response.links.add(linkCollections);
 
             while (rs.next()) {
                 Collections collection = new Collections();
@@ -118,21 +125,21 @@ public class FeatureCollectionsController {
                 collection.title = rs.getString("title");
                 collection.description = rs.getString("description");
 
-                linkCollectionItems.href = "http://localhost:8080/collections/" + collection.id + "/items";
-                linkCollectionItems.rel = "items";
-                linkCollection.href = "http://localhost:8080/collections/" + collection.id;
-                linkCollection.rel = "self";
+                linkCollectionItems.href = HOST_STRING + request.getRequestURI() + "/" + ITEMS_RELATION;
+                linkCollectionItems.rel = ITEMS_RELATION;
+                linkCollection.href = HOST_STRING + request.getRequestURI();
+                linkCollection.rel = SELF_RELATION;
 
                 collection.links.add(linkCollectionItems);
                 collection.links.add(linkCollection);
 
-                responseOGC.collections.add(collection);
+                response.collections.add(collection);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
 
-        return new ResponseEntity<>(responseOGC, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "/collections/{collectionid}/items", produces = MediaType.APPLICATION_JSON_VALUE)
