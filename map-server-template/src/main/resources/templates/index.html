@@ -7,7 +7,19 @@
 <body>
     <h4>Collections in this service</h4>
    	<ul th:each="collection : ${collections}">
-		<li th:text="'name: ' + ${collection.description}"></li>
+		<li th:text="'name: ' + ${collection.name}"></li>
  	</ul>
+
+    <br>
+    <h4>Collections page</h4>
+    <li><a href="http://localhost:8080/collections">http://localhost:8080/collections</a></li>
+
+    <br>
+    <h4>API</h4>
+    <li><a href="http://localhost:8080/v3/api-docs">http://localhost:8080/v3/api-docs</a></li>
+
+    <br>
+    <h4>Conformance page</h4>
+    <li><a href="http://localhost:8080/conformance">http://localhost:8080/conformance</a></li>
 </body>
 </html>

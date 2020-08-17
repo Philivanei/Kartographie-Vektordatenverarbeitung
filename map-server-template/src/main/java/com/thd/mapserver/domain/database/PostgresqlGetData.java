@@ -16,7 +16,7 @@ public class PostgresqlGetData {
         this.connectionString = connectionString;
     }
 
-    public ResultSet getFeatureTypes() throws PostgresqlException {
+    public ResultSet getCollections() throws PostgresqlException {
         try (final var connection = DriverManager.getConnection(connectionString)) {
             final var getString = "SELECT * FROM public.collections";
             final var getStatement = connection.createStatement();

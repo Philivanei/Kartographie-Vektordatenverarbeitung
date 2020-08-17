@@ -62,7 +62,7 @@ public class FeatureCollectionsController {
         Response responseOGC = new Response();
         PostgresqlGetData postgresqlGetData = new PostgresqlGetData(CONNECTION_STRING);
 
-        var rs = postgresqlGetData.getFeatureTypes();
+        var rs = postgresqlGetData.getCollections();
 
         try {
             Links linkCollections = new Links();
