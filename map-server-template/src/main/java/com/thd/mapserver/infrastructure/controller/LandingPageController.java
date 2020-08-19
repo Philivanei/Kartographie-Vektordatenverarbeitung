@@ -1,7 +1,11 @@
 package com.thd.mapserver.infrastructure.controller;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.thd.mapserver.domain.database.PostgresqlGetData;
+import com.thd.mapserver.domain.exceptions.PostgresqlException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,37 +13,52 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class LandingPageController {
 
-	//TODO: get all collections (SQL) -> Parse them to List<FeatureCollection> -> pass them to the model (model.addAttribute)
-	@GetMapping("/")
-	public String test(Model model) {
-		final var collections = List.of(new FeatureCollection("test1", "collection 1"),
-				new FeatureCollection("test2", "collection 2"));
-		model.addAttribute("collections", collections); // A Attribute can be accessed via the ${attributeName} syntax
-														// in the html template
-		return "index"; // name of the template page located under resources/templates
-	}
+    private final String CONNECTION_STRING = "jdbc:postgresql://localhost/Studienarbeit?user=postgres&password=0000";
 
-	@GetMapping("/conformance")
-	public String getLandingPage() {
-		return "conformance";
-	}
-	
-	public static class FeatureCollection {
-		private String name;
-		private String description;
+    @GetMapping("/")
+    public String test(Model model) throws PostgresqlException {
+        PostgresqlGetData postgresqlGetData = new PostgresqlGetData(CONNECTION_STRING);
 
-		public FeatureCollection(String name, String description) {
-			this.name = name;
-			this.description = description;
-		}
-		
-		public String getName() {
-			return this.name;
-		}
-		
-		public String getDescription() {
-			return this.description;
-		}
-	}
+        List<FeatureCollection> featureCollections = new ArrayList<>();
+        var rs = postgresqlGetData.getCollections();
+
+        try {
+            while (rs.next()) {
+                var name = rs.getString("title");
+                var description = rs.getString("description");
+                FeatureCollection featureCollection = new FeatureCollection(name, description);
+                featureCollections.add(featureCollection);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        model.addAttribute("collections", featureCollections); // A Attribute can be accessed via the ${attributeName} syntax
+        // in the html template
+        return "index"; // name of the template page located under resources/templates
+    }
+
+    @GetMapping("/conformance")
+    public String getLandingPage() {
+        return "conformance";
+    }
+
+    public static class FeatureCollection {
+        private final String name;
+        private final String description;
+
+        public FeatureCollection(String name, String description) {
+            this.name = name;
+            this.description = description;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public String getDescription() {
+            return this.description;
+        }
+    }
 
 }

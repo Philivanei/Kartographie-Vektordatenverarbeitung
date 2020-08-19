@@ -4,7 +4,7 @@ import java.util.List;
 
 public class SFALineString extends SFAGeometry {
 
-    private List<SFAPoint> points;
+    private final List<SFAPoint> points;
 
     public SFALineString(List<SFAPoint> points, int srid) {
         super(srid);
