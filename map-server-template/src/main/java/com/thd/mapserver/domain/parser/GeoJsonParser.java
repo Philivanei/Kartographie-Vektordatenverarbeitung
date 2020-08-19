@@ -43,7 +43,7 @@ public class GeoJsonParser {
 
     private Map<String, String> parseProperties(Map<String, Object> properties) {
         Map<String, String> stringMap = new HashMap<>();
-        //wandelt jedes element in string um
+        //changes every element to string value
         properties.forEach((key, value) -> stringMap.put(key, value.toString()));
         return stringMap;
     }
@@ -66,7 +66,6 @@ public class GeoJsonParser {
         for (var geometry : geometryCollection.getGeometries()) {
             sfaGeometries.add(parseGeometry(geometry));
         }
-        //zu Collection hinzufügen => Liste
         return new SFAGeometryCollection(sfaGeometries, 0);
     }
 
